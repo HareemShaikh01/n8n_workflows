@@ -1,0 +1,633 @@
+{
+  "name": "hr assisstant",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        32
+      ],
+      "id": "1ea56f7f-2162-4455-b44b-e321ab80f0f5",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "searchMethod": "query",
+        "queryString": "'1ZQb5ykPDhmvH9ZCdqx7Np-uok83TKwl0' in parents and trashed = false",
+        "returnAll": true,
+        "filter": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -256,
+        32
+      ],
+      "id": "955181ec-ab16-49f0-af7a-c3033140e52a",
+      "name": "Search files and folders",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "xWBgucN6i2vS1R68",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -48,
+        32
+      ],
+      "id": "40a3a2ea-ae33-4d5d-aac5-fea2b95d0867",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        160,
+        128
+      ],
+      "id": "95692e6b-382e-47eb-a389-e99c1b1bd67d",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "xWBgucN6i2vS1R68",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        368,
+        128
+      ],
+      "id": "4e18c7b7-8130-461f-97b4-10c5678f5e34",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=CV text extracted is :: {{ $json.text }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an AI recruitment assistant specialized in analyzing CVs for Python developer roles.\n\nYour task is to analyze the CV text provided and return all information strictly in JSON format. You must always return a JSON **object**, never an array, never free text, and never extra commentary. Use `null` for any field if the information is missing.\n\nReturn the output in the following exact JSON structure:\n\n{\n  \"name\": \"<full name of applicant or null>\",\n  \"email\": \"<email of applicant or null>\",\n  \"qualification\": \"<degree, university, and CGPA/grade or null>\",\n  \"python_experience_years\": <number of years of Python experience, or null>,\n  \"summary\": \"<concise summary of the CV highlighting skills, projects, and strengths, or null>\",\n  \"recommendation\": <true or false>\n}\n\nRules:\n1. Always return valid JSON with exactly these fields.\n2. If any field is missing in the CV, set it explicitly to `null`.\n3. `name`, `email`, `qualification`, and `summary` must be strings or null.\n4. `python_experience_years` must be a number or null.\n5. `recommendation` must be a boolean (true or false).\n6. Do not include any text outside the JSON, including explanations, notes, or formatting.\n7. Even if the CV is empty or has no information, still return a JSON object with all fields present and appropriate null/default values.\n\n**Example of valid output:**\n{\n  \"name\": \"Ayesha Khan\",\n  \"email\": \"ayesha.khan@example.com\",\n  \"qualification\": \"B.Sc. in Computer Science, NUST, CGPA 3.7/4.0\",\n  \"python_experience_years\": 2,\n  \"summary\": \"Ayesha has 2 years of Python experience focusing on web development and data analysis. She has worked on projects involving Flask, Pandas, and API integrations. Strong problem-solving skills and familiarity with Git and unit testing. She is enthusiastic about learning new technologies and contributing to team projects.\",\n  \"recommendation\": true\n}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        576,
+        128
+      ],
+      "id": "24823c6b-e118-4075-bed0-4e80a6d8ef19",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "xiaomi/mimo-v2-flash:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        432,
+        336
+      ],
+      "id": "7b35f804-11c6-4b74-b01e-d3179de46995",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "mxwVlFu1r4HXbcSF",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"name\": \"Ayesha Khan\",\n  \"email\": \"ayesha.khan@example.com\",\n  \"qualification\": \"B.Sc. in Computer Science, National University of Sciences and Technology, CGPA 3.7/4.0\",\n  \"python_experience_years\": 2,\n  \"summary\": \"Ayesha has 2 years of Python experience focusing on web development and data analysis. She has worked on projects involving Flask, Pandas, and API integrations. Strong problem-solving skills and familiarity with Git and unit testing. She is enthusiastic about learning new technologies and contributing to team projects.\",\n  \"recommendation\": true\n}\n",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        752,
+        336
+      ],
+      "id": "59db6eed-2133-4c2c-a49b-fd0fc45223ba",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": "xiaomi/mimo-v2-flash:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        576,
+        352
+      ],
+      "id": "416244dc-da96-4729-af66-4d7f07959a60",
+      "name": "OpenRouter Chat Model2",
+      "credentials": {
+        "openRouterApi": {
+          "id": "mxwVlFu1r4HXbcSF",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "hareemshaikh2006@gmail.com",
+        "subject": "New Applicant!",
+        "message": "=CV Approval Request\n\nName:{{ $json.output.name }}\nEmail:{{ $json.output.email }} \n\nQualification: {{ $json.output.qualification }}\nPython Experience (Years):{{ $json.output.python_experience_years }} \nRecommendation:{{ $json.output.recommendation }} \n\nSummary:{{ $json.output.summary }}",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        928,
+        128
+      ],
+      "id": "014aca2a-9f10-4f49-9c56-4102506dc0b8",
+      "name": "Send message and wait for response1",
+      "webhookId": "32692aaf-7172-405b-9752-4ca3fe16dc70",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "RD33ihPpxnLbEHMN",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "660f2078-df9a-405d-a305-cd69cd60bb16",
+              "leftValue": "={{ $json.data.approved }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1136,
+        128
+      ],
+      "id": "172abc39-3a80-4f5c-b77c-e63e1589e4f8",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an assistant that schedules interviews in Google Calendar.\n\nSTRICT, NON-NEGOTIABLE RULES\n- You MUST use tools when instructed\n- You MUST call CreateCalendarEvent if a valid slot exists\n- You are NOT allowed to return text or JSON before calling CreateCalendarEvent\n- Time slots MUST be aligned to full hours only (HH:00 to HH:00)\n- Only NEXT calendar week is allowed\n- You MUST select the EARLIEST possible available slot\n- Skipping an earlier available slot is STRICTLY FORBIDDEN\n\nSTEP 1 — FETCH EVENTS (MANDATORY TOOL CALL)\nCall GetCalendarEvents to retrieve all events ONLY within:\n\n- Next calendar week (the week AFTER {{ $now }})\n- Monday 08:00 to Friday 17:00 (local time)\n\nDO NOT fetch events outside this window.\nDO NOT include the current week under any circumstances.\n\nSTEP 2 — FIND AVAILABLE SLOT (STRICT ORDER)\nEvaluate availability using this EXACT order and NO OTHER:\n\nDays (in order):\n- Monday\n- Tuesday\n- Wednesday\n- Thursday\n- Friday\n\nHours (in order for EACH day):\n- 08:00–09:00\n- 09:00–10:00\n- 10:00–11:00\n- 11:00–12:00\n- 12:00–13:00\n- 13:00–14:00\n- 14:00–15:00\n- 15:00–16:00\n- 16:00–17:00\n\nRules:\n- Check slots strictly in the above order\n- The FIRST slot that does NOT overlap with any existing event MUST be selected\n- Once a valid slot is found, STOP searching immediately\n- It is FORBIDDEN to consider later slots if an earlier slot is free\n- DO NOT create partial or misaligned times (example forbidden: 08:07–09:07)\n\nIf NO valid 1-hour slot exists in the entire week:\nReturn EXACTLY this text and STOP:\nNO_AVAILABLE_SLOT\n\nSTEP 3 — CREATE EVENT (MANDATORY)\nImmediately after selecting the earliest valid slot,\ncall CreateCalendarEvent with:\n\nsummary:\n\"Interview with {{ $('AI Agent').item.json.output.name }}\"\n\nstart.dateTime:\nISO 8601 datetime of the selected slot start (HH:00)\n\nend.dateTime:\nISO 8601 datetime exactly 60 minutes later (HH+1:00)\n\nSTEP 4 — FINAL RESPONSE\nAfter CreateCalendarEvent succeeds,\nreturn ONLY the tool’s result.\nNo explanations. No formatting. No extra text.\n\nREFERENCE\n- Today’s date/time: {{ $now }}\n- Timezone: local calendar timezone\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1344,
+        32
+      ],
+      "id": "adff182b-8e57-4114-9c87-337a87f09930",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "hareemshaikh2006@gmail.com",
+          "mode": "list",
+          "cachedResultName": "hareemshaikh2006@gmail.com"
+        },
+        "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
+        "options": {
+          "timeZone": {
+            "__rl": true,
+            "value": "Asia/Karachi",
+            "mode": "list",
+            "cachedResultName": "Asia/Karachi"
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        1456,
+        272
+      ],
+      "id": "756c5106-95dd-4a40-85cc-fbea5f98889c",
+      "name": "GetCalendarEvent",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "G63fQPIa4gU8a4iG",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "hareemshaikh2006@gmail.com",
+          "mode": "list",
+          "cachedResultName": "hareemshaikh2006@gmail.com"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "additionalFields": {
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        1600,
+        336
+      ],
+      "id": "5563a27c-e460-4c23-b604-1db2cf682637",
+      "name": "CreateCalendarEvent",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "G63fQPIa4gU8a4iG",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "xiaomi/mimo-v2-flash:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        240
+      ],
+      "id": "5258d5ee-3d7d-4cbe-b962-c39575a6a4ec",
+      "name": "OpenRouter Chat Model4",
+      "credentials": {
+        "openRouterApi": {
+          "id": "mxwVlFu1r4HXbcSF",
+          "name": "OpenRouter account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Search files and folders": [
+      {
+        "json": {
+          "id": "1Q9c2Nega7gPz0U0KSYdaHy7S4hB8BK5A",
+          "name": "Lisa Burges CV.pdf"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "id": "1d_gaHxvNBZHsXgsjYRgki5xeRSDkTXx5",
+          "name": "Jessica Bailey CV .pdf"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "id": "1GbVdgyD47QbsE9Z-v7VTFgxyzV9ZCH3E",
+          "name": "Janet Winslow CV.pdf"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "id": "1Qu5vFT4nOUCDDdoHJs9ZQ4zuzZWuYRJ3",
+          "name": "James Randell CV.pdf"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "id": "1I2Rg1xTQxyIwd2A0qXqS-gDgjPT9UIfg",
+          "name": "Devin Rymes CV.pdf"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "id": "156twp19fAaNB8e4yC8CS7Ct4ccIPXY9g",
+          "name": "Craig Roberts CV.pdf"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "id": "1NGmI0YzH_7xUPOMjiJLjvITxaDa0TOOi",
+          "name": "Brenda Jones CV.pdf"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "id": "1Gck6YJZz2tJU0nMbhX7OS7zmBznYw2f-",
+          "name": "Andrew Johnson DV.pdf"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Extract from File": [
+      {
+        "json": {
+          "numpages": 3,
+          "numrender": 3,
+          "info": {
+            "PDFFormatVersion": "1.3",
+            "Language": null,
+            "EncryptFilterName": null,
+            "IsLinearized": false,
+            "IsAcroFormPresent": false,
+            "IsXFAPresent": false,
+            "IsCollectionPresent": false,
+            "IsSignaturesPresent": false,
+            "Title": "Lisa Burges CV",
+            "Producer": "macOS Version 15.2 (Build 24C101) Quartz PDFContext",
+            "Creator": "Pages",
+            "CreationDate": "D:20250917081658Z00'00'",
+            "ModDate": "D:20250917081658Z00'00'"
+          },
+          "text": "Curriculum Vitae\nPersonal Information\n• Full Name: Lisa Anne Burges\n• Date of Birth: 27 September 1998\n• Email: lisa.burges.dev@gmail.com\n• Phone: +44 7700 654321\n• Address: 18 Willowbank Close, Manchester, UK\nProfessional Summary\nMotivated front-end developer with 2 years of professional experience in JavaScript and modern\nweb technologies. Specialized in building dynamic, responsive applications using Vue.js and\nassociated tooling. Experienced in collaborating with cross-functional teams, integrating REST\nAPIs, and delivering polished, user-friendly interfaces. Passionate about creating accessible,\nmaintainable, and performant applications.\nTechnical Skills\n• Languages: JavaScript (ES6+), HTML5, CSS3, TypeScript (basic)\n• Frameworks & Libraries: Vue.js (Vue 2 & Vue 3), Vuex, Vuetify, Pinia, TailwindCSS\n• Tools & Platforms: Node.js, Webpack, Vite, Git, GitHub, Figma, Jira\n• Databases & APIs: Firebase, MongoDB (basic), RESTful APIs\n• Other: Agile/Scrum, Responsive Web Design, Unit Testing (Jest)\nWork Experience\nFront-End Developer\nBrightPixel Digital, Manchester, UK\nAugust 2022 – Present\n• Built and maintained client-facing web applications using Vue 3 and Vuetify, ensuring\ncross-browser compatibility and accessibility compliance.\n• Integrated REST APIs into Vue applications, improving data synchronization and user\ninteractivity.\n• Collaborated with UX/UI designers to implement responsive, mobile-first layouts.\n\n• Refactored legacy Vue 2 codebase to Vue 3 with Composition API, improving code\nmaintainability.\n• Contributed to Agile ceremonies and provided technical input during sprint planning.\nKey Project:\n• FoodieFinder: A restaurant discovery web app built with Vue 3 and TailwindCSS,\nintegrating Google Maps API for location-based search. The app achieved 10,000 active\nmonthly users within 6 months of launch.\nJunior Front-End Developer\nCloudCrafters Ltd, Salford, UK\nJuly 2021 – July 2022\n• Assisted in building small to mid-scale web apps using Vue.js and Vuex for state\nmanagement.\n• Implemented reusable Vue components to speed up development and maintain design\nconsistency.\n• Fixed UI bugs and optimized page load performance, reducing load times by 25%.\n• Worked closely with QA teams to ensure high code quality and test coverage.\n• Learned and applied Agile methodologies to deliver on-time sprint commitments.\nKey Project:\n• TaskMate: A collaborative task management tool built with Vue.js and Firebase for real-\ntime data updates. Successfully deployed to several small businesses for internal project\ntracking.\nEducation\nBSc (Hons) Web Development & Design\nManchester Metropolitan University, UK\n2017 – 2020\nCertifications\n• Vue Mastery: Vue 3 Essentials Certificate (2022)\n• freeCodeCamp: JavaScript Algorithms and Data Structures (2021)\nPersonal Interests\n• Contributing to open-source Vue components.\n\n• Writing tutorials on front-end development for beginner developers.\n• Exploring new coffee shops around Manchester.\n• Practicing digital illustration.",
+          "version": "5.3.31"
+        },
+        "binary": {},
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Send message and wait for response1": [
+      {
+        "json": {
+          "data": {
+            "approved": true
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send message and wait for response1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send message and wait for response1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetCalendarEvent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CreateCalendarEvent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Asia/Karachi",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "9b27c171-3e60-4bb9-9e60-b300771e8937",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "493710fb88a59b1c2ed429ca53afc0f2c29649804104c944bd27b84ae4a822ce"
+  },
+  "id": "tiFeMsI9DXLnoQ7RuqbPR",
+  "tags": []
+}
