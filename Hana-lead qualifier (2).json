@@ -1,0 +1,914 @@
+{
+  "name": "Hana-lead qualifier",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Add Lead",
+        "formDescription": "Add lead data and let Hana qualify that lead for you",
+        "formFields": {
+          "values": [
+            {
+              "fieldName": "Nama",
+              "fieldLabel": "name",
+              "placeholder": "Daiel",
+              "requiredField": true
+            },
+            {
+              "fieldName": "WANumber",
+              "fieldLabel": "wanumber",
+              "fieldType": "number",
+              "placeholder": "923367072788",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.4,
+      "position": [
+        -384,
+        -128
+      ],
+      "id": "14373093-1769-4c32-904a-ebf24e230bf1",
+      "name": "On form submission",
+      "webhookId": "6b8cb7a5-05fd-4893-a089-6e71da762b83"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Fm0T9-e81ypSLk0bhsvXtCSLNn1T79feou7aQIEu6bI",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Fm0T9-e81ypSLk0bhsvXtCSLNn1T79feou7aQIEu6bI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.Nama }}",
+            "waNumber": "={{ $json.WANumber }}",
+            "BuisnessType": "null",
+            "isPotentialLead": "false",
+            "demandedServices": "null",
+            "lastMsgTimestamp": "null",
+            "step": "0",
+            "followupsSent": "0"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "waNumber",
+              "displayName": "waNumber",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "BuisnessType",
+              "displayName": "BuisnessType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "isPotentialLead",
+              "displayName": "isPotentialLead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "demandedServices",
+              "displayName": "demandedServices",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "lastMsgTimestamp",
+              "displayName": "lastMsgTimestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "step",
+              "displayName": "step",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "followupsSent",
+              "displayName": "followupsSent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -160,
+        -128
+      ],
+      "id": "afcdfc0a-5734-4906-8a87-1c5a92ae90e4",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "KmMsSodY9WKLARQ9",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1Fm0T9-e81ypSLk0bhsvXtCSLNn1T79feou7aQIEu6bI",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Fm0T9-e81ypSLk0bhsvXtCSLNn1T79feou7aQIEu6bI/edit#gid=0"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -384,
+        160
+      ],
+      "id": "1d8bfc34-2ca3-4cee-acd5-9cc9434cd776",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "xEwlJXbnszt1Frrm",
+          "name": "Google Sheets Trigger account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all()[$input.all().length-1];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        160
+      ],
+      "id": "325d3433-5c40-4cae-a402-8acba7d4971f",
+      "name": "Extract New Lead"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://waha:3000/api/sendText",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "X-Api-Key",
+              "value": "super_secret_key"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chatId",
+              "value": "={{ $json.waNumber }}@c.us"
+            },
+            {
+              "name": "text",
+              "value": "=Hey {{ $json.Name }}! 👋 I’m Hana, an AI agent from XYZ Agency.\nWe help businesses 🚀 level up efficiently, and our clients often see up to 60% more revenue 💰  all without adding extra staff.\n\nCurious to see how we could do the same for your business? 🤔\nJust let me know if you’re open for a quick chat! ✨"
+            },
+            {
+              "name": "session",
+              "value": "default"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        64,
+        160
+      ],
+      "id": "0dc36857-038c-4ce6-8641-220650d4c9ec",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "waha",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -384,
+        496
+      ],
+      "id": "320eaa7d-09ac-46c2-b5f6-243543445609",
+      "name": "Webhook",
+      "webhookId": "5139ed57-f2ae-4023-8643-7f391d70a0af"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f7511889-21a1-4ac3-9e59-1ded1501b0b5",
+              "leftValue": "={{ $json.body.payload.from }}",
+              "rightValue": "@lid",
+              "operator": {
+                "type": "string",
+                "operation": "endsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -160,
+        496
+      ],
+      "id": "3479e74c-4922-4c94-ad8e-9ebc95019838",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Role: You are Hana, a professional Sales Discovery Agent for an automation agency. Your primary goal is to qualify leads and keep the database updated in real-time.\n\nTool Access: You have access to the tool updateLeadData. You must call this tool the moment you receive information for any of the three fields listed below. Calling this tool automatically updates the corresponding row in the Google Sheet.\n\nIncoming Lead Message:\"{{ $('extract wanumber and text').item.json.text }}\"\n\nCurrent Lead Context (Live Sheet Data):\n\nName: {{ $('lead already exist?').item.json.Name }}\n\nBusiness Type:{{ $('lead already exist?').item.json.BuisnessType }}\n\nPotential Lead: {{ $('lead already exist?').item.json.isPotentialLead }}\n\nDemanded Services:{{ $('lead already exist?').item.json.demandedServices }}\n\n📋 Sequential Logic & Tool Triggers\nFollow these steps in strict order. Never ask two questions at once.\n\nStep 1: Interest Check\nTrigger: If isPotentialLead is null or false.\n\nAction: If the lead shows interest (e.g., \"Tell me more\"/ \"I'm ready\"/\"intersted\"/\"yeah lets talk\"):\n\nCall updateLeadData with isPotentialLead: true. and other two fields same as it is \n\nResponse: \"That’s a great decision, {{ $('lead already exist?').item.json.Name }}! I love your initiative. Our agency helps businesses achieve 30–50% growth through smart automation. To tailor our chat, could you tell me if your business is product-based or service-based?\"\n\nStep 2: Business Type Identification\nTrigger: If isPotentialLead is true but BuisnessType is null.\n\nAction: If the lead provides their business type:\n\nCall updateLeadData with BuisnessType: \"value\"\n\nResponse: \"Perfect, thanks for that! I've noted that you are [BuisnessType]. Moving forward, what specific services or automations are you looking for? (e.g., Lead Gen, Social Media automation, or Workflow optimization).\"\n\nConstraint: Do not move to Step 3 until the tool has been used to save the Business Type.\n\nStep 3: Service Discovery\nTrigger: If BuisnessType is known but demandedServices is null.\n\nAction: Once they specify their needs:\n\nCall updateLeadData with demandedServices: \"value\".\n\nResponse: \"Thanks, {{ $('lead already exist?').item.json.Name }}! I’ve noted your preferences. Our team will review your details and get in touch soon. Really appreciate your time! 🙂\"\n\n⚠️ Strict Execution Rules\nTool Usage: You are a \"Data-First\" agent. Every time you extract a piece of info, you must use updateLeadData immediately.\n\nOne Question at a Time: Never skip ahead. You must confirm the Business Type before asking for specific services.\n\nPersonalization: Address the user as {{ $('lead already exist?').item.json.Name }}.\n\nHandling Off-Topic Messages: If the user asks unrelated questions, reply: \"I'd be happy to help with that! However, to give you the most accurate advice, I first need to know: [Insert missing question from Step 1, 2, or 3].\"\n\nRejection: If they are not interested, call updateLeadData with isPotentialLead: false and say: \"No worries at all,{{ $('lead already exist?').item.json.Name }} ! Feel free to reach out if you ever want to explore automation in the future.\"",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        112,
+        720
+      ],
+      "id": "25e68f29-7c43-43e4-aed2-ff2be11eaf13",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1Fm0T9-e81ypSLk0bhsvXtCSLNn1T79feou7aQIEu6bI",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Fm0T9-e81ypSLk0bhsvXtCSLNn1T79feou7aQIEu6bI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "waNumber": "={{ $('lead already exist?').item.json.waNumber }}",
+            "Name": "={{ $('lead already exist?').item.json.Name }}",
+            "BuisnessType": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('BuisnessType', ``, 'string') }}",
+            "isPotentialLead": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('isPotentialLead', ``, 'string') }}",
+            "demandedServices": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('demandedServices', ``, 'string') }}",
+            "lastMsgTimestamp": "={{ $('lead already exist?').item.json.lastMsgTimestamp }}",
+            "step": "={{ $('lead already exist?').item.json.step }}",
+            "followupsSent": "={{ $('lead already exist?').item.json.followupsSent }}"
+          },
+          "matchingColumns": [
+            "waNumber"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "waNumber",
+              "displayName": "waNumber",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "BuisnessType",
+              "displayName": "BuisnessType",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "isPotentialLead",
+              "displayName": "isPotentialLead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "demandedServices",
+              "displayName": "demandedServices",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "lastMsgTimestamp",
+              "displayName": "lastMsgTimestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "step",
+              "displayName": "step",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "followupsSent",
+              "displayName": "followupsSent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        256,
+        976
+      ],
+      "id": "6ee20f03-b1f8-4ed1-8ed5-36a073527a80",
+      "name": "updateLeadData",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "KmMsSodY9WKLARQ9",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('lead already exist?').item.json.waNumber }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        144,
+        928
+      ],
+      "id": "0686f23b-2c9f-4e9a-b3e9-111ae1bc2bee",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "content": "Add Lead",
+        "height": 272,
+        "width": 768
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -480,
+        -224
+      ],
+      "typeVersion": 1,
+      "id": "de2da174-377a-4a0f-a274-84b2898c5124",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Cold Dm\n",
+        "height": 240,
+        "width": 752,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -480,
+        96
+      ],
+      "typeVersion": 1,
+      "id": "c8ada8f1-f3b0-45a0-a877-8788d3aded53",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "jsCode": "let wanumber= $input.first().json.pn.split('@')\nreturn {\n  wanumber:wanumber[0],\n  text:$('Webhook').first().json.body.payload.body\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        288,
+        496
+      ],
+      "id": "db345ee2-34c4-4554-8137-5b480904c5e8",
+      "name": "extract wanumber and text"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Fm0T9-e81ypSLk0bhsvXtCSLNn1T79feou7aQIEu6bI",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Fm0T9-e81ypSLk0bhsvXtCSLNn1T79feou7aQIEu6bI/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "waNumber",
+              "lookupValue": "={{ $json.wanumber }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        512,
+        496
+      ],
+      "id": "71050c41-c961-41ae-887a-19ba7204483f",
+      "name": "get lead data",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "KmMsSodY9WKLARQ9",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e713ccd1-51c4-48d7-bb83-4b13f521d05f",
+              "leftValue": "={{ $json.Name }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": false
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -384,
+        736
+      ],
+      "id": "d2ba5736-6baa-4228-a147-84215be2256f",
+      "name": "lead already exist?"
+    },
+    {
+      "parameters": {
+        "model": "z-ai/glm-4.5-air:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        16,
+        992
+      ],
+      "id": "b38a30a7-9ed2-40c9-a07f-4408c0983276",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "oL2KVsLSNbDkbYL4",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=http://waha:3000/api/default/lids/{{ $json.body.payload.from }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Api-Key",
+              "value": "super_secret_key"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        64,
+        496
+      ],
+      "id": "f1fdbad8-eacb-49c3-8915-d77b63f384c9",
+      "name": "@lid -> @c.us"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://waha:3000/api/sendText",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Api-Key",
+              "value": "super_secret_key"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chatId",
+              "value": "={{ $('lead already exist?').item.json.waNumber }}@c.us"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.output }}"
+            },
+            {
+              "name": "session",
+              "value": "default"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        480,
+        720
+      ],
+      "id": "97eb7405-3ffe-435b-bbab-08f621777ca6",
+      "name": "Send Message"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://waha:3000/api/startTyping",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Api-Key",
+              "value": "super_secret_key"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "session",
+              "value": "default"
+            },
+            {
+              "name": "chatId",
+              "value": "={{ $json.waNumber }}@c.us"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -144,
+        720
+      ],
+      "id": "a6f35e0c-d09f-4345-a59a-5ca24c7d8b1b",
+      "name": "Typing"
+    },
+    {
+      "parameters": {
+        "content": "Lead Qualification\n",
+        "height": 752,
+        "width": 1200,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -480,
+        400
+      ],
+      "typeVersion": 1,
+      "id": "25ed9142-00e6-4696-bb6c-76cda44ce58c",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract New Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract New Lead": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        []
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "@lid -> @c.us",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updateLeadData": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extract wanumber and text": {
+      "main": [
+        [
+          {
+            "node": "get lead data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get lead data": {
+      "main": [
+        [
+          {
+            "node": "lead already exist?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "lead already exist?": {
+      "main": [
+        [
+          {
+            "node": "Typing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "@lid -> @c.us": {
+      "main": [
+        [
+          {
+            "node": "extract wanumber and text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Message": {
+      "main": [
+        []
+      ]
+    },
+    "Typing": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "a6f7269e-ddc9-4a63-97af-7baf5404a041",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8c17755f8d856d4e9443c02c7454e72a2f53d5d95aaa81da43e788ac28da7680"
+  },
+  "id": "XUCMsxMRmmENZqFMRFlqy",
+  "tags": []
+}
